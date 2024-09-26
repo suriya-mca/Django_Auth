@@ -1,0 +1,11 @@
+# python env file
+env
+
+# example .env file
+.env.example
+
+# readme file
+README.md
+
+# .gitignore file
+.gitignore
