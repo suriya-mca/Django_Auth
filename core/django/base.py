@@ -58,16 +58,16 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 # ASGI_APPLICATION = 'core.asgi.application'
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django_prometheus.db.backends.postgresql',
-#         'OPTIONS': {
-#             'service': 'postgres/my_service',
-#             'passfile': 'postgres/.my_pgpass',
-#             'pool': True,
-#         },
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'OPTIONS': {
+            'service': 'my_service',
+            'passfile': '.my_pgpass',
+            'pool': True,
+        },
+    }
+}
 
 AUTH_PASSWORD_VALIDATORS = [
     {
