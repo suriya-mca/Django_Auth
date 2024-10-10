@@ -1,0 +1,28 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>{% block title %} {% endblock %}</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <meta name="description" content="Django Base Auth">
+    <meta name="keywords" content="Authentication/Authorization">
+    <meta name="author" content="Suriya">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css">
+</head>
+
+<body id="body" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+        
+    {% block layout %}
+
+    {% endblock %}
+
+    <script defer src="{% static 'js/htmx/htmx.min.js' %}"></script>
+
+</body>
+
+</html>

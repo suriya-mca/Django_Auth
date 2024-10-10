@@ -1,5 +1,6 @@
 asgiref==3.8.1
 Django==5.1.1
+django-htmx==1.19.0
 psycopg==3.2.2
 psycopg-binary==3.2.2
 psycopg-pool==3.2.3
