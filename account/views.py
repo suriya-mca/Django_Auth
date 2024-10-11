@@ -54,7 +54,7 @@ def register(request):
 		user_token = UserToken.objects.create(user=user, token=verify_token, expiration_date=expiration_date)
 		user_token.save()
 
-		url = f'{settings.DOMAIN}/auth/verify_account'
+		url = f'{settings.DOMAIN}/auth/verify-account'
 		message = 'email/verify_account_email.html'
 		subject = 'Account Verification'
 		send_reset_email_thread(email, verify_token, url, message, subject)
@@ -75,10 +75,10 @@ def verify_account(request, token):
 		context = {'message': response}               
 		return render(request, 'pages/auth/verify_account.html', context)
 			
-	if user_token.is_expired():
-		response = "⚠️ Token has expired"
-		context = {'message': response}
-		return render(request, 'pages/auth/verify_account.html', context)
+	# if user_token.is_expired():
+	# 	response = "⚠️ Token has expired"
+	# 	context = {'message': response}
+	# 	return render(request, 'pages/auth/verify_account.html', context)
 
 	user = user_token.user
 	user.is_active = True
@@ -148,7 +148,7 @@ def forgot_password(request):
 		user_token = UserToken.objects.create(user=user, token=reset_token, expiration_date=expiration_date)
 		user_token.save()
 
-		url = f'{settings.DOMAIN}/auth/reset_password'
+		url = f'{settings.DOMAIN}/auth/reset-password'
 		message = 'email/reset_password_email.html'
 		subject = 'Password Reset'
 		send_reset_email_thread(email, reset_token, url, message, subject)
@@ -172,9 +172,9 @@ def reset_password(request, token):
 			messages.warning(request, '⚠️ Invalid or expired token')
 			return HttpResponseClientRefresh()
         
-		if user_token.is_expired():
-			messages.warning(request, '⚠️ Token has expired')
-			return HttpResponseClientRefresh()
+		# if user_token.is_expired():
+		# 	messages.warning(request, '⚠️ Token has expired')
+		# 	return HttpResponseClientRefresh()
 
 		if not password:
 			response = HttpResponse("Password is required")               
@@ -183,6 +183,10 @@ def reset_password(request, token):
 		if not password == confirm_password:
 			response = HttpResponse("Confirm pasword not matching")               
 			return retarget(response, '#danger-confirm-password')
+
+		if user_token.user.check_password(password):
+			response = HttpResponse("New password cannot be the same as the old password")
+			return retarget(response, '#danger-password')
 
 		user = user_token.user
 		user.set_password(password)
