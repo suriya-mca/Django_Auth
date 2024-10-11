@@ -7,7 +7,6 @@ class UserToken(models.Model):
 	user = models.ForeignKey(User, on_delete=models.CASCADE)
 	token = models.CharField(max_length=21)
 	expiration_date = models.DateTimeField()
-	used = models.BooleanField(default=False) 
 	expired = models.BooleanField(default=False)
 
 	def __str__(self):
@@ -18,11 +17,10 @@ class UserToken(models.Model):
 		super().save(*args, **kwargs)
 
 	def is_expired(self):
-		return self.expiration_date < timezone.now() or self.used
+		return self.expiration_date < timezone.now()
 
 	def mark_as_used(self):
-		self.used = True
-		self.save()
+		self.delete()
 
 	class Meta:
 		indexes = [
