@@ -1,7 +1,7 @@
 <nav class="navbar px-2 has-shadow" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
         <a class="navbar-item has-text-primary" href="#" title="Logo">
-            <strong>OpenCRM</strong>
+            <strong>Auth</strong>
         </a>
 
         <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu">
@@ -22,7 +22,7 @@
                         {% endif %}
                         <a class="button is-dark" href="{% url 'logout' %}" title="Log out">Log out</a>
                     {% else %}
-                        <a class="button" href="https://github.com/suriya-mca/Crm" title="GitHub" target=”_blank”><strong>GitHub</strong></a>
+                        <a class="button" href="https://github.com/suriya-mca/Django_Auth" title="GitHub" target=”_blank”><strong>GitHub</strong></a>
                         <a class="button is-primary" href="{% url 'login' %}" title="Log in">Log in</a>
                     {% endif %}
                 </div>

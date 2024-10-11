@@ -14,7 +14,7 @@
 
                         <form class="box" hx-post="{% url 'login' %}" hx-target="#messages-container" hx-on:htmx:before-request="clientErrorCheck()">
 
-                            <p class="title is-4 mb-5 py-3 has-text-centered">Crm/login</p>
+                            <p class="title is-4 mb-5 py-3 has-text-centered">Auth/login</p>
 
                             {% include 'partials/message.html' %}
 
