@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.conf import settings
 from django.views.decorators.http import require_http_methods, require_GET
+from django.contrib.auth.decorators import login_not_required
 from django.contrib.auth.models import User, auth
 from django.contrib import messages
 from django.http import HttpResponse
@@ -12,6 +13,7 @@ from .models import UserToken
 from .utils import send_reset_email_thread, generate_token
 
 
+@login_not_required
 @require_http_methods(["GET", "POST"])
 def register(request):
 
@@ -65,6 +67,7 @@ def register(request):
 	return render(request, 'pages/auth/register.html')
 
 
+@login_not_required
 @require_GET
 def verify_account(request, token):
 
@@ -74,11 +77,6 @@ def verify_account(request, token):
 		response = "⚠️ Invalid or expired token"
 		context = {'message': response}               
 		return render(request, 'pages/auth/verify_account.html', context)
-			
-	# if user_token.is_expired():
-	# 	response = "⚠️ Token has expired"
-	# 	context = {'message': response}
-	# 	return render(request, 'pages/auth/verify_account.html', context)
 
 	user = user_token.user
 	user.is_active = True
@@ -90,6 +88,7 @@ def verify_account(request, token):
 	return render(request, 'pages/auth/verify_account.html', message)
 
 
+@login_not_required
 @require_http_methods(["GET", "POST"])
 def login(request):
 
@@ -132,6 +131,7 @@ def logout(request):
     return redirect('login')
 
 
+@login_not_required
 @require_http_methods(["GET", "POST"])
 def forgot_password(request):
 
@@ -159,6 +159,7 @@ def forgot_password(request):
 	return render(request, 'pages/auth/forget_password.html')
 
 
+@login_not_required
 @require_http_methods(["GET", "POST"])
 def reset_password(request, token):
 
@@ -171,10 +172,6 @@ def reset_password(request, token):
 		if not user_token:
 			messages.warning(request, '⚠️ Invalid or expired token')
 			return HttpResponseClientRefresh()
-        
-		# if user_token.is_expired():
-		# 	messages.warning(request, '⚠️ Token has expired')
-		# 	return HttpResponseClientRefresh()
 
 		if not password:
 			response = HttpResponse("Password is required")               

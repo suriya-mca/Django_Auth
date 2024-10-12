@@ -3,7 +3,9 @@ from django.shortcuts import render
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.auth.decorators import login_not_required
 
+@login_not_required
 def home(request):
 	return render(request, 'pages/home/index.html')
 
