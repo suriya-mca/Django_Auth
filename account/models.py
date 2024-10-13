@@ -5,7 +5,7 @@ from django.utils import timezone
 
 class UserToken(models.Model):
 	user = models.ForeignKey(User, on_delete=models.CASCADE)
-	token = models.CharField(max_length=21)
+	token = models.CharField(max_length=12)
 	expiration_date = models.DateTimeField()
 	expired = models.BooleanField(default=False)
 
