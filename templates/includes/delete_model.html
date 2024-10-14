@@ -1,0 +1,102 @@
+<div class="modal" id="modal-js-example">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Delete Account</p>
+            <button class="delete" aria-label="close"></button>
+        </header>
+
+        <section>
+            <form class="box" hx-post="{% url 'delete' %}" hx-target="#messages-container" hx-on:htmx:before-request="clientErrorCheck()">
+
+                <div class="msg" id="messages-container"></div>
+
+                <div class="colums"> 
+                    <div class="field column">
+                        <article class="message is-small is-danger">
+                            <div class="message-body" title="Message">
+                                To ensure the security of your account, please confirm your decision by typing your name before proceeding with the deletion. This action is irreversible, and all your data will be permanently removed.
+                            </div>
+                        </article>
+                    </div>
+                </div>
+                <div class="colums">
+                    <div class="field column">
+                        <div class="control">
+                            <input type="text" name="username" id="user-input" class="input" placeholder="Username" minlength="3" title="Name" required>
+                        </div>
+                        <p class="help is-danger" id="danger-username"></p>
+                    </div>      
+                </div>
+                <div class="colums"> 
+                    <div class="field column">
+                        <button type="submit" class="button is-danger" title="Login">Confirm</button>
+                    </div>
+                </div>
+
+            </form>
+        </section>
+    </div>
+</div>
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', () => {
+
+    function openModal($el) {
+        $el.classList.add('is-active');
+    }
+
+    function closeModal($el) {
+        $el.classList.remove('is-active');
+    }
+
+    function closeAllModals() {
+        (document.querySelectorAll('.modal') || []).forEach(($modal) => {
+            closeModal($modal);
+        });
+    }
+
+    (document.querySelectorAll('.js-modal-trigger') || []).forEach(($trigger) => {
+        const modal = $trigger.dataset.target;
+        const $target = document.getElementById(modal);
+
+        $trigger.addEventListener('click', () => {
+            openModal($target);
+        });
+    });
+
+    (document.querySelectorAll('.modal-background, .modal-close, .modal-card-head .delete, .modal-card-foot .button') || []).forEach(($close) => {
+        const $target = $close.closest('.modal');
+
+        $close.addEventListener('click', () => {
+            closeModal($target);
+        });
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if(event.key === "Escape") {
+            closeAllModals();
+        }
+    });
+    });
+
+    function clientErrorCheck() {
+        const userInput = document.getElementById('user-input');
+        const dangerUser = document.getElementById('danger-username');
+
+        userInput.addEventListener('input', () => {
+            if (dangerUser.innerHTML !== '') {
+                dangerUser.innerHTML = '';
+                userInput.classList.remove('is-danger');
+            }
+        });
+
+        document.addEventListener('htmx:afterRequest', (event) => {
+            if (event.detail.target.id === 'danger-username' && event.detail.successful) {
+                userInput.classList.add('is-danger');
+            }
+        });
+    };
+
+</script>

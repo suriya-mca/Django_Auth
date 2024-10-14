@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_not_required
 from django.contrib.auth.models import User, auth
 from django.contrib import messages
 from django.http import HttpResponse
-from django_htmx.http import retarget, HttpResponseClientRedirect, HttpResponseClientRefresh, HttpResponseLocation
+from django_htmx.http import retarget, HttpResponseClientRedirect, HttpResponseClientRefresh
 
 from .models import UserToken
 from .utils import send_reset_email_thread, generate_token
@@ -56,13 +56,13 @@ def register(request):
 		user_token = UserToken.objects.create(user=user, token=verify_token, expiration_date=expiration_date)
 		user_token.save()
 
-		url = f'{settings.DOMAIN}/auth/verify-account'
+		url = f'{settings.DOMAIN}/accounts/verify-account'
 		message = 'email/verify_account_email.html'
 		subject = 'Account Verification'
 		send_reset_email_thread(email, verify_token, url, message, subject)
 
 		messages.success(request, 'Registered Successfully! Check your mail & verify')
-		return HttpResponseClientRedirect('/auth/login')
+		return HttpResponseClientRedirect('/accounts/login')
 		   
 	return render(request, 'pages/auth/register.html')
 
@@ -74,7 +74,7 @@ def verify_account(request, token):
 	user_token = UserToken.objects.filter(token=token).first()
 
 	if not user_token:
-		response = "⚠️ Invalid or expired token"
+		response = "Invalid or expired token"
 		context = {'message': response}               
 		return render(request, 'pages/auth/verify_account.html', context)
 
@@ -148,7 +148,7 @@ def forgot_password(request):
 		user_token = UserToken.objects.create(user=user, token=reset_token, expiration_date=expiration_date)
 		user_token.save()
 
-		url = f'{settings.DOMAIN}/auth/reset-password'
+		url = f'{settings.DOMAIN}/accounts/reset-password'
 		message = 'email/reset_password_email.html'
 		subject = 'Password Reset'
 		send_reset_email_thread(email, reset_token, url, message, subject)
@@ -170,8 +170,12 @@ def reset_password(request, token):
 		user_token = UserToken.objects.filter(token=token).first()
 
 		if not user_token:
-			messages.warning(request, '⚠️ Invalid or expired token')
+			messages.warning(request, 'Invalid or expired token')
 			return HttpResponseClientRefresh()
+
+		if user_token.user.check_password(password):
+			response = HttpResponse("New password cannot be the same as the old password")
+			return retarget(response, '#danger-password')
 
 		if not password:
 			response = HttpResponse("Password is required")               
@@ -181,18 +185,29 @@ def reset_password(request, token):
 			response = HttpResponse("Confirm pasword not matching")               
 			return retarget(response, '#danger-confirm-password')
 
-		if user_token.user.check_password(password):
-			response = HttpResponse("New password cannot be the same as the old password")
-			return retarget(response, '#danger-password')
-
 		user = user_token.user
 		user.set_password(password)
 		user.save()
 		user_token.mark_as_used()
 		
 		messages.success(request, 'Password reset successfully 👍')
-		return HttpResponseClientRefresh()
+		return HttpResponseClientRedirect('/accounts/login')
 
 	context = {"token": token}
 	return render(request, 'pages/auth/reset_password.html', context)
-    
+
+
+@require_http_methods(["POST"])
+def delete_account(request):
+
+	user = request.user
+
+	if request.htmx and request.POST:
+		username = request.POST['username'].strip()
+
+		if username == user.username:
+			user.delete()
+			return HttpResponseClientRedirect('/')
+
+		response = HttpResponse("Enter your correct username")               
+		return retarget(response, '#danger-username')
