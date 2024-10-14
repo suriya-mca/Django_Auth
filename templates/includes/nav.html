@@ -20,6 +20,7 @@
                         {% if user.is_superuser %}
                             <a class="button is-primary" href="{% url 'admin:index' %}" title="Admin">Admin</a>
                         {% endif %}
+                        <a class="button is-danger js-modal-trigger" data-target="modal-js-example" title="Add Contact">Delete</a>
                         <a class="button is-dark" href="{% url 'logout' %}" title="Log out">Log out</a>
                     {% else %}
                         <a class="button" href="https://github.com/suriya-mca/Django_Auth" title="GitHub" target=”_blank”><strong>GitHub</strong></a>
