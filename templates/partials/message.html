@@ -1,7 +1,29 @@
 {% for message in messages %}
-    <div class="message {{ message.tags }} is-small">
+    <div class="message message-container-message {{ message.tags }} is-small" id="message-{{ forloop.counter }}">
         <div class="message-body">
             {{ message }}
         </div>
     </div>
 {% endfor %}
+
+<script>
+    function setMessageTimeout() {
+        const messageTimeout = 6000;
+
+        document.querySelectorAll("#messages-container .message-container-message").forEach((messageElement) => {
+            setTimeout(() => {
+                messageElement.style.transition = "opacity 0.5s ease-out";
+                messageElement.style.opacity = 0;
+                setTimeout(() => messageElement.remove(), 500);
+            }, messageTimeout);
+        });
+    }
+
+    setMessageTimeout();
+
+    document.body.addEventListener("htmx:afterSettle", (event) => {
+        if (event.target.id === "messages-container") {
+            setMessageTimeout();
+        }
+    });
+</script>

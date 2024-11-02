@@ -82,10 +82,12 @@ def verify_account(request, token):
 	user.is_active = True
 	user.save()
 	user_token.mark_as_used()
-
-	response = "Account verified successfully!"              
-	message = {'message': response}
-	return render(request, 'pages/auth/verify_account.html', message)
+	
+	context = {
+    	'user': user,
+    	'message': "Account verified successfully!",
+	}
+	return render(request, 'pages/auth/verify_account.html', context)
 
 
 @login_not_required
