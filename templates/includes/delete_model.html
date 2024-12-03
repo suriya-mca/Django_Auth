@@ -93,8 +93,9 @@
         });
 
         document.addEventListener('htmx:afterRequest', (event) => {
-            if (event.detail.target.id === 'danger-username' && event.detail.successful) {
+            if (event.detail.target.id === 'danger-username' && event.detail.xhr.status === 400) {
                 userInput.classList.add('is-danger');
+                dangerUser.textContent = event.detail.xhr.responseText;
             }
         });
     };

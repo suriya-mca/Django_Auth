@@ -79,8 +79,11 @@
             const emailInput = document.getElementById('email-input');
             const dangerEmail = document.getElementById('danger-email');
 
-            const passwordInput = document.getElementById('confirm-password-input');
-            const dangerPassword = document.getElementById('danger-confirm-password');
+            const passwordInput = document.getElementById('password-input');
+            const dangerPassword = document.getElementById('danger-password');
+
+            const confirmPasswordInput = document.getElementById('confirm-password-input');
+            const dangerConfirmPassword = document.getElementById('danger-confirm-password');
 
             userInput.addEventListener('input', () => {
                 if (dangerUser.innerHTML !== '') {
@@ -103,21 +106,38 @@
                 }
             });
 
+            confirmPasswordInput.addEventListener('input', () => {
+                if (dangerConfirmPassword.innerHTML !== '') {
+                    dangerConfirmPassword.innerHTML = '';
+                    confirmPasswordInput.classList.remove('is-danger');
+                }
+            });
+
             document.addEventListener('htmx:afterRequest', (event) => {
-                if (event.detail.target.id === 'danger-username' && event.detail.successful) {
+                if (event.detail.target.id === 'danger-username' && (event.detail.xhr.status === 400 || event.detail.xhr.status === 409)) {
                     userInput.classList.add('is-danger');
+                    dangerUser.textContent = event.detail.xhr.responseText;
                 }
             });
 
             document.addEventListener('htmx:afterRequest', (event) => {
-                if (event.detail.target.id === 'danger-email' && event.detail.successful) {
+                if (event.detail.target.id === 'danger-email' && (event.detail.xhr.status === 400 || event.detail.xhr.status === 409)) {
                     emailInput.classList.add('is-danger');
+                    dangerEmail.textContent = event.detail.xhr.responseText;
                 }
             });
 
             document.addEventListener('htmx:afterRequest', (event) => {
-                if (event.detail.target.id === 'danger-confirm-password' && event.detail.successful) {
+                if (event.detail.target.id === 'danger-password' && event.detail.xhr.status === 400) {
                     passwordInput.classList.add('is-danger');
+                    dangerPassword.textContent = event.detail.xhr.responseText;
+                }
+            });
+
+            document.addEventListener('htmx:afterRequest', (event) => {
+                if (event.detail.target.id === 'danger-confirm-password' && event.detail.xhr.status === 400) {
+                    confirmPasswordInput.classList.add('is-danger');
+                    dangerConfirmPassword.textContent = event.detail.xhr.responseText;
                 }
             });
         };
