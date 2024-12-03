@@ -24,27 +24,27 @@ def register(request):
 		confirm_password = request.POST['confirm_password'].strip()
 
 		if not username:
-			response = HttpResponse("Username is required")               
+			response = HttpResponse("Username is required", status=400)               
 			return retarget(response, '#danger-username')
 
 		if not email:
-			response = HttpResponse("Email is required")               
+			response = HttpResponse("Email is required", status=400)               
 			return retarget(response, '#danger-email')
 
 		if not password:
-			response = HttpResponse("Password is required")               
+			response = HttpResponse("Password is required", status=400)               
 			return retarget(response, '#danger-password')
 
 		if not password == confirm_password:
-			response = HttpResponse("Confirm pasword not matching")               
+			response = HttpResponse("Confirm pasword not matching", status=400)               
 			return retarget(response, '#danger-confirm-password')
 
 		if User.objects.filter(username=username).exists():
-			response = HttpResponse("User name taken")               
+			response = HttpResponse("User name taken", status=409)               
 			return retarget(response, '#danger-username')
 			
 		if User.objects.filter(email=email).exists():
-			response = HttpResponse("Email already exists")               
+			response = HttpResponse("Email already exists", status=409)               
 			return retarget(response, '#danger-email')
             
 		user = User.objects.create_user(username=username, email=email, password=password)
@@ -99,25 +99,25 @@ def login(request):
 		password = request.POST['password'].strip()
 
 		if not username:
-			response = HttpResponse("Username is required")               
+			response = HttpResponse("Username is required", status=400)               
 			return retarget(response, '#danger-username')
 
 		if not password:
-			response = HttpResponse("Password is required")               
+			response = HttpResponse("Password is required", status=400)               
 			return retarget(response, '#danger-password')
 
 		if not User.objects.filter(username=username).exists():
-			response = HttpResponse("Username not exists")               
+			response = HttpResponse("Username not exists", status=404)               
 			return retarget(response, '#danger-username')
 
 		if not User.objects.filter(username=username, is_active=True).exists():
-			response = HttpResponse("Account not verified, check your mail")               
+			response = HttpResponse("Account not verified, check your mail", status=403)               
 			return retarget(response, '#danger-username')
 
 		user = auth.authenticate(username=username, password=password)
 
 		if user is None:
-			response = HttpResponse("Re-check the password")               
+			response = HttpResponse("Re-check the password", status=401)               
 			return retarget(response, '#danger-password')
 
 		auth.login(request, user)
@@ -142,7 +142,7 @@ def forgot_password(request):
 		user = User.objects.filter(email=email).first()
 
 		if user is None:
-			response = HttpResponse("Email not found")               
+			response = HttpResponse("Email not found", status=404)               
 			return retarget(response, '#danger-email')
 
 		reset_token = generate_token()
@@ -155,7 +155,7 @@ def forgot_password(request):
 		subject = 'Password Reset'
 		send_reset_email_thread(email, reset_token, url, message, subject)
 
-		response = HttpResponse("Email Sent!")               
+		response = HttpResponse("Email Sent!", status=200)               
 		return retarget(response, '#email-button')
 
 	return render(request, 'pages/auth/forget_password.html')
@@ -176,15 +176,15 @@ def reset_password(request, token):
 			return HttpResponseClientRefresh()
 
 		if user_token.user.check_password(password):
-			response = HttpResponse("New password cannot be the same as the old password")
+			response = HttpResponse("New password cannot be the same as the old password", status=400)
 			return retarget(response, '#danger-password')
 
 		if not password:
-			response = HttpResponse("Password is required")               
+			response = HttpResponse("Password is required", status=400)               
 			return retarget(response, '#danger-password')
 
 		if not password == confirm_password:
-			response = HttpResponse("Confirm pasword not matching")               
+			response = HttpResponse("Confirm pasword not matching", status=400)               
 			return retarget(response, '#danger-confirm-password')
 
 		user = user_token.user
@@ -211,5 +211,5 @@ def delete_account(request):
 			user.delete()
 			return HttpResponseClientRedirect('/')
 
-		response = HttpResponse("Enter your correct username")               
+		response = HttpResponse("Enter your correct username", status=400)               
 		return retarget(response, '#danger-username')

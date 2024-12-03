@@ -80,14 +80,16 @@
             });
 
             document.addEventListener('htmx:afterRequest', (event) => {
-                if (event.detail.target.id === 'danger-username' && event.detail.successful) {
+                if (event.detail.target.id === 'danger-username' && (event.detail.xhr.status === 400 || event.detail.xhr.status === 404 || event.detail.xhr.status === 403)) {
                     userInput.classList.add('is-danger');
+                    dangerUser.textContent = event.detail.xhr.responseText;
                 }
             });
 
             document.addEventListener('htmx:afterRequest', (event) => {
-                if (event.detail.target.id === 'danger-password' && event.detail.successful) {
+                if (event.detail.target.id === 'danger-password' && (event.detail.xhr.status === 400 || event.detail.xhr.status === 401)) {
                     passwordInput.classList.add('is-danger');
+                    dangerPassword.textContent = event.detail.xhr.responseText;
                 }
             });
         };
